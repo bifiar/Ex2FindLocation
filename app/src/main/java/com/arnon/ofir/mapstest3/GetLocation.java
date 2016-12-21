@@ -33,6 +33,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationServices;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -51,21 +52,21 @@ import java.util.Map;
  * also using APIs that need authentication.
  */
 public class GetLocation extends AppCompatActivity implements
-        ConnectionCallbacks, OnConnectionFailedListener {
+        ConnectionCallbacks, OnConnectionFailedListener,LocationListener {
 
     protected static final String TAG = "GetLocation";
     private Integer locationId=0;
     /**
      * Provides the entry point to Google Play services.
      */
-    protected GoogleApiClient mGoogleApiClient;
+
     private FirebaseDatabase database;
     /**
      * Represents a geographical location.
      */
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
     protected Location mLastLocation;
-
+    protected GoogleApiClient mGoogleApiClient;
     protected String mLatitudeLabel;
     protected String mLongitudeLabel;
     protected TextView mLatitudeText;
@@ -130,7 +131,7 @@ public class GetLocation extends AppCompatActivity implements
 
 
             DatabaseReference myRef = database.getReference("Locations");
-            myRef.child(locationId.toString()).setValue(new MyLocation(mLatitudeText.getText().toString(),mLongitudeText.getText().toString()));
+            myRef.child(locationId.toString()).setValue(new MyLocation(mLatitudeText.getText().toString(),mLongitudeText.getText().toString(),"debug"));
             locationId++;
 
 //            // Read from the database
@@ -170,7 +171,11 @@ public class GetLocation extends AppCompatActivity implements
         Log.i(TAG, "Connection suspended");
         mGoogleApiClient.connect();
     }
-
+    @Override
+    public void onLocationChanged(Location location){
+        Double curLat = location.getLatitude();//current latitude
+        Double curLong = location.getLongitude();//current longitude
+    }
     private Location enableMyLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {

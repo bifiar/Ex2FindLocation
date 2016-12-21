@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingBottom="@dimen/activity_vertical_margin"
@@ -10,24 +9,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.arnon.ofir.mapstest3.MainActivity">
 
-    <Button
-        android:text="Google Maps"
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
-        android:layout_marginTop="97dp"
-        android:id="@+id/GoogleMapsBtn"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true"
-        android:background="@android:color/holo_blue_dark" />
+        android:inputType="textPersonName"
+        android:ems="10"
+        android:id="@+id/userNameEt"
+        android:layout_marginTop="17dp"
+        android:layout_below="@+id/EnterUserName"
+        android:layout_centerHorizontal="true" />
 
     <Button
-        android:text="My Location"
+        android:text="Sign In"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/MyLocationBtn"
-        android:layout_below="@+id/GoogleMapsBtn"
-        android:layout_marginTop="84dp"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:id="@+id/SignInBtn"
+        android:layout_marginTop="23dp"
+        android:layout_below="@+id/userNameEt"
+        android:layout_alignStart="@+id/userNameEt"
+        android:layout_alignEnd="@+id/userNameEt" />
+
+    <TextView
+        android:text="Enter user name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/EnterUserName"
+        android:layout_marginTop="167dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
 </RelativeLayout>

@@ -5,31 +5,29 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
-    Button googleMapsBtn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        googleMapsBtn=(Button) findViewById(R.id.GoogleMapsBtn);
-        googleMapsBtn.setOnClickListener(new View.OnClickListener() {
+
+        Button signIn=(Button) findViewById(R.id.SignInBtn);
+        final EditText userName= (EditText) findViewById(R.id.userNameEt);
+        signIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent anythingintent=new Intent(MainActivity.this,MyLocationDemoActivity.class);
-                startActivity(anythingintent);
+                Intent signInIntent=new Intent(MainActivity.this,MyLocationDemoActivity.class);
+                signInIntent.putExtra("user",userName.getText().toString());
+                startActivity(signInIntent);
+
             }
         });
-        //MyLocationBtn
-        Button MyLocationBtn=(Button) findViewById(R.id.MyLocationBtn);
-        MyLocationBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent anythingintent=new Intent(MainActivity.this,GetLocation.class);
-                startActivity(anythingintent);
-            }
-        });
+
     }
 
 

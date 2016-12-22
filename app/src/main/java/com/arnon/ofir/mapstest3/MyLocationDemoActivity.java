@@ -86,25 +86,26 @@ public class MyLocationDemoActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        database=FirebaseDatabase.getInstance();
+        database = FirebaseDatabase.getInstance();
         user = this.getIntent().getExtras().getString("user");
 
 
-        creatUserOnDb();                                                                                             ;
+        creatUserOnDb();
+        ;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
-        Button frienndsLocations=(Button) findViewById(R.id.friendslocationsBtn);
+        Button frienndsLocations = (Button) findViewById(R.id.friendslocationsBtn);
         frienndsLocations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent frienndsLocationsIntent=new Intent(MyLocationDemoActivity.this,ListViewCheckboxesActivity.class);
-                frienndsLocationsIntent.putExtra("user",user);
-                frienndsLocationsIntent.putExtra("users",countryList);
+                Intent frienndsLocationsIntent = new Intent(MyLocationDemoActivity.this, ListViewCheckboxesActivity.class);
+                frienndsLocationsIntent.putExtra("user", user);
+                frienndsLocationsIntent.putExtra("users", countryList);
                 startActivity(frienndsLocationsIntent);//countryList
 
             }
         });
-        Button showBtn=(Button) findViewById(R.id.showBtn);
+        Button showBtn = (Button) findViewById(R.id.showBtn);
         showBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -112,13 +113,13 @@ public class MyLocationDemoActivity extends AppCompatActivity
             }
         });
 
-        if(this.getIntent().getExtras().getSerializable("users")==null) {
+        if (this.getIntent().getExtras().getSerializable("users") == null) {
             GetUserData();
-        }else{
-            countryList = ( ArrayList<Country>)this.getIntent().getExtras().getSerializable("users");
+        } else {
+            countryList = (ArrayList<Country>) this.getIntent().getExtras().getSerializable("users");
         }
         buildGoogleApiClient();
-        SupportMapFragment mapFragment =(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
 
@@ -130,6 +131,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
         enableMyLocation();
 
     }
+
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -153,14 +155,13 @@ public class MyLocationDemoActivity extends AppCompatActivity
     }
 
 
-
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "MyLocation saved on database", Toast.LENGTH_SHORT).show();
         // Return false so that we don't consume the event and the default behavior still occurs
         // (the camera animates to the user's current position).
 
-         //System.out.println(myRef.child("gps"));
+        //System.out.println(myRef.child("gps"));
         //   }
         return false;
     }
@@ -200,9 +201,10 @@ public class MyLocationDemoActivity extends AppCompatActivity
         PermissionUtils.PermissionDeniedDialog
                 .newInstance(true).show(getSupportFragmentManager(), "dialog");
     }
-    private void creatUserOnDb(){
+
+    private void creatUserOnDb() {
         DatabaseReference myRef = database.getReference("users");
-        myRef.child(user).setValue(new MyLocation("0","0","user"));
+        myRef.child(user).setValue(new MyLocation("0", "0", "user"));
     }
 
     @Override
@@ -218,6 +220,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
         // Begin polling for new location updates.
         startLocationUpdates();
     }
+
     // Trigger new location updates at interval
     protected void startLocationUpdates() {
         // Create the location request
@@ -228,6 +231,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
         // Request location updates
         enableUpdateMyLocation();
     }
+
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "Connection suspended");
@@ -243,22 +247,22 @@ public class MyLocationDemoActivity extends AppCompatActivity
     public void onLocationChanged(Location location) {
 
         DatabaseReference myRef = database.getReference("users");
-        myRef.child(user).setValue(new MyLocation(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),"user"));
+        myRef.child(user).setValue(new MyLocation(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), "user"));
     }
-    private void GetUserData(){
-        database.getReference("users").addListenerForSingleValueEvent( new ValueEventListener(){
+
+    private void GetUserData() {
+        database.getReference("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 countryList = new ArrayList<Country>();
                 Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) dataSnapshot.getValue();
                 Log.d("1", "Value is: " + map);
 
-                for (Map.Entry<String,Map<String, String>> entry : map.entrySet())
-                {
+                for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
 
                     Log.d("1", "Value is: " + entry.getValue().get("permissions"));
                     Log.d("1", "Value is: " + entry.getKey());
-                    Country country = new Country(entry.getValue().get("permissions"),entry.getKey(),false,entry.getValue().get("latitude"),entry.getValue().get("longitude"));
+                    Country country = new Country(entry.getValue().get("permissions"), entry.getKey(), false, entry.getValue().get("latitude"), entry.getValue().get("longitude"));
                     countryList.add(country);
                 }
 
@@ -286,10 +290,12 @@ public class MyLocationDemoActivity extends AppCompatActivity
         }
         return mLastLocation;
     }
-    private void updateLocationOnDb(Location location){
+
+    private void updateLocationOnDb(Location location) {
         DatabaseReference myRef = database.getReference("users");
-        myRef.child(user).setValue(new MyLocation(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),"user"));
+        myRef.child(user).setValue(new MyLocation(String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()), "user"));
     }
+
     private void enableUpdateMyLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -298,10 +304,11 @@ public class MyLocationDemoActivity extends AppCompatActivity
                     android.Manifest.permission.ACCESS_FINE_LOCATION, true);
         } else if (mGoogleApiClient != null) {
             // Access to the location has been granted to the app.
-           // mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            // mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
         }
     }
+
     /**
      * Enables the My MyLocation layer if the fine location permission has been granted.
      */
@@ -316,40 +323,31 @@ public class MyLocationDemoActivity extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
         }
     }
+
     protected void startDemo() {
         IconGenerator iconFactory = new IconGenerator(this);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.1041943, 35.2050993), 10));
-        for(Country country:countryList){
-            if(country.isSelected()) {
+        for (Country country : countryList) {
+            if (country.isSelected()) {
+                int randStyle = (int)( Math.random() * 3);
+                switch (randStyle) {
+                    case 0:
+                        iconFactory.setStyle(IconGenerator.STYLE_RED);
+                        break;
+                    case 1:
+                        iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
+                        break;
+                    case 2:
+                        iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+                        break;
+
+                }
                 addIcon(iconFactory, country.getuserName(), new LatLng(Double.parseDouble(country.getLatitude()), Double.parseDouble(country.getLongitude())));
             }
+
+
         }
-
-
-//
-//
-//        iconFactory.setColor(Color.CYAN);
-//        addIcon(iconFactory, "Custom color", new LatLng(-33.9360, 151.2070));
-//
-//        iconFactory.setRotation(90);
-//        iconFactory.setStyle(IconGenerator.STYLE_RED);
-//        addIcon(iconFactory, "Rotated 90 degrees", new LatLng(-33.8858, 151.096));
-//
-//        iconFactory.setContentRotation(-90);
-//        iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
-//        addIcon(iconFactory, "Rotate=90, ContentRotate=-90", new LatLng(-33.9992, 151.098));
-//
-//        iconFactory.setRotation(0);
-//        iconFactory.setContentRotation(90);
-//        iconFactory.setStyle(IconGenerator.STYLE_GREEN);
-//        addIcon(iconFactory, "ContentRotate=90", new LatLng(-33.7677, 151.244));
-//
-//        iconFactory.setRotation(0);
-//        iconFactory.setContentRotation(0);
-//        iconFactory.setStyle(IconGenerator.STYLE_ORANGE);
-//        addIcon(iconFactory, makeCharSequence(), new LatLng(-33.77720, 151.12412));
     }
-
     private void addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {
         MarkerOptions markerOptions = new MarkerOptions().
                 icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
@@ -359,14 +357,5 @@ public class MyLocationDemoActivity extends AppCompatActivity
         mMap.addMarker(markerOptions);
     }
 
-    private CharSequence makeCharSequence() {
-        String prefix = "Mixing ";
-        String suffix = "different fonts";
-        String sequence = prefix + suffix;
-        SpannableStringBuilder ssb = new SpannableStringBuilder(sequence);
-        ssb.setSpan(new StyleSpan(ITALIC), 0, prefix.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
-        ssb.setSpan(new StyleSpan(BOLD), prefix.length(), sequence.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
-        return ssb;
-    }
 }
 

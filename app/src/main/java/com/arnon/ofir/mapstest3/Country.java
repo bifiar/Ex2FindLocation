@@ -11,12 +11,25 @@ public class Country implements Serializable{
     String premission = null;
     String userName = null;
     boolean selected = false;
+    private String latitude;
+    private String longitude;
 
-    public Country(String premission, String userName, boolean selected) {
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public Country(String premission, String userName, boolean selected, String latitude, String longitude) {
         super();
         this.premission = premission;
         this.userName = userName;
         this.selected = selected;
+        this.latitude=latitude;
+
+        this.longitude=longitude;
     }
 
     public String getpremission() {

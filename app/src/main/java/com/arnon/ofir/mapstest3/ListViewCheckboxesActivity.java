@@ -10,6 +10,7 @@ import java.util.concurrent.ThreadFactory;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,12 +34,14 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ListViewCheckboxesActivity extends Activity {
     private DatabaseReference databaseRef;
+    private String user;
     MyCustomAdapter dataAdapter = null;
     private  ArrayList<Country> countryList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         databaseRef=FirebaseDatabase.getInstance().getReference();
         countryList = ( ArrayList<Country>)this.getIntent().getExtras().getSerializable("users");
+        user=this.getIntent().getExtras().getString("user");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -145,7 +148,7 @@ public class ListViewCheckboxesActivity extends Activity {
             public void onClick(View v) {
 
                 StringBuffer responseText = new StringBuffer();
-                responseText.append("The following were selected...\n");
+
 
                 ArrayList<Country> countryList = dataAdapter.countryList;
                 ArrayList<Country> userSelected=new ArrayList<Country>();
@@ -156,9 +159,10 @@ public class ListViewCheckboxesActivity extends Activity {
                     }
                 }
 
-                Toast.makeText(getApplicationContext(),
-                        responseText, Toast.LENGTH_LONG).show();
-
+                Intent signInIntent=new Intent(ListViewCheckboxesActivity.this,MyLocationDemoActivity.class);
+                signInIntent.putExtra("user",user);
+                signInIntent.putExtra("users",countryList);
+                startActivity(signInIntent);
             }
         });
 

@@ -3,6 +3,7 @@ package com.arnon.ofir.mapstest3;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -12,6 +13,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -24,9 +27,11 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.database.DataSnapshot;
@@ -35,10 +40,16 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.android.ui.IconGenerator;
+
+import static android.graphics.Typeface.BOLD;
+import static android.graphics.Typeface.ITALIC;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+
+import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
 
 /**
  * Created by Ofir on 12/16/2016.
@@ -77,6 +88,8 @@ public class MyLocationDemoActivity extends AppCompatActivity
 
         database=FirebaseDatabase.getInstance();
         user = this.getIntent().getExtras().getString("user");
+
+
         creatUserOnDb();                                                                                             ;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
@@ -85,12 +98,25 @@ public class MyLocationDemoActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 Intent frienndsLocationsIntent=new Intent(MyLocationDemoActivity.this,ListViewCheckboxesActivity.class);
+                frienndsLocationsIntent.putExtra("user",user);
                 frienndsLocationsIntent.putExtra("users",countryList);
                 startActivity(frienndsLocationsIntent);//countryList
 
             }
         });
-        GetUserData();
+        Button showBtn=(Button) findViewById(R.id.showBtn);
+        showBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startDemo();
+            }
+        });
+
+        if(this.getIntent().getExtras().getSerializable("users")==null) {
+            GetUserData();
+        }else{
+            countryList = ( ArrayList<Country>)this.getIntent().getExtras().getSerializable("users");
+        }
         buildGoogleApiClient();
         SupportMapFragment mapFragment =(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -232,7 +258,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
 
                     Log.d("1", "Value is: " + entry.getValue().get("permissions"));
                     Log.d("1", "Value is: " + entry.getKey());
-                    Country country = new Country(entry.getValue().get("permissions"),entry.getKey(),false);
+                    Country country = new Country(entry.getValue().get("permissions"),entry.getKey(),false,entry.getValue().get("latitude"),entry.getValue().get("longitude"));
                     countryList.add(country);
                 }
 
@@ -290,4 +316,57 @@ public class MyLocationDemoActivity extends AppCompatActivity
             mMap.setMyLocationEnabled(true);
         }
     }
+    protected void startDemo() {
+        IconGenerator iconFactory = new IconGenerator(this);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.1041943, 35.2050993), 10));
+        for(Country country:countryList){
+            if(country.isSelected()) {
+                addIcon(iconFactory, country.getuserName(), new LatLng(Double.parseDouble(country.getLatitude()), Double.parseDouble(country.getLongitude())));
+            }
+        }
+
+
+//
+//
+//        iconFactory.setColor(Color.CYAN);
+//        addIcon(iconFactory, "Custom color", new LatLng(-33.9360, 151.2070));
+//
+//        iconFactory.setRotation(90);
+//        iconFactory.setStyle(IconGenerator.STYLE_RED);
+//        addIcon(iconFactory, "Rotated 90 degrees", new LatLng(-33.8858, 151.096));
+//
+//        iconFactory.setContentRotation(-90);
+//        iconFactory.setStyle(IconGenerator.STYLE_PURPLE);
+//        addIcon(iconFactory, "Rotate=90, ContentRotate=-90", new LatLng(-33.9992, 151.098));
+//
+//        iconFactory.setRotation(0);
+//        iconFactory.setContentRotation(90);
+//        iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+//        addIcon(iconFactory, "ContentRotate=90", new LatLng(-33.7677, 151.244));
+//
+//        iconFactory.setRotation(0);
+//        iconFactory.setContentRotation(0);
+//        iconFactory.setStyle(IconGenerator.STYLE_ORANGE);
+//        addIcon(iconFactory, makeCharSequence(), new LatLng(-33.77720, 151.12412));
+    }
+
+    private void addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {
+        MarkerOptions markerOptions = new MarkerOptions().
+                icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(text))).
+                position(position).
+                anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV());
+
+        mMap.addMarker(markerOptions);
+    }
+
+    private CharSequence makeCharSequence() {
+        String prefix = "Mixing ";
+        String suffix = "different fonts";
+        String sequence = prefix + suffix;
+        SpannableStringBuilder ssb = new SpannableStringBuilder(sequence);
+        ssb.setSpan(new StyleSpan(ITALIC), 0, prefix.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.setSpan(new StyleSpan(BOLD), prefix.length(), sequence.length(), SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
+    }
 }
+

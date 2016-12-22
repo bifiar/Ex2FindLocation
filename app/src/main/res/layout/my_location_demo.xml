@@ -34,10 +34,10 @@
 
 
     <Button
-        android:text="Friends locations"
+        android:text="select"
         android:layout_marginStart="40dp"
         android:layout_marginTop="35dp"
-        android:layout_width="300dp"
+        android:layout_width="130dp"
         android:layout_height="40dp"
         android:id="@+id/friendslocationsBtn" />
 
@@ -49,4 +49,12 @@
         android:layout_marginTop="0dp"
         android:layout_below="@+id/editText"
         android:id="@+id/QrBtn" />
+    <Button
+        android:text="show "
+        android:layout_marginStart="210dp"
+        android:layout_width="130dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/editText"
+        android:id="@+id/showBtn" />
 </FrameLayout>

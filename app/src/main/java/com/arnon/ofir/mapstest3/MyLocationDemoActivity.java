@@ -77,11 +77,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
         buttonsListener();
-        if (this.getIntent().getExtras().getSerializable("users") == null) {
-            GetUserData();
-        } else {
-            userDetailsList = (ArrayList<userDetails>) this.getIntent().getExtras().getSerializable("users");
-        }
+        checkDBupdate();
         buildGoogleApiClient();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -105,6 +101,13 @@ public class MyLocationDemoActivity extends AppCompatActivity
                 showSelectedUserMarks();
             }
         });
+        Button refreshBtb = (Button) findViewById(R.id.refreshBtb);
+        showBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GetUserData();
+            }
+        });
     }
     @Override
     public void onMapReady(GoogleMap map) {
@@ -121,6 +124,13 @@ public class MyLocationDemoActivity extends AppCompatActivity
                 .addOnConnectionFailedListener(this)
                 .addApi(LocationServices.API)
                 .build();
+    }
+    private void checkDBupdate(){
+        if (this.getIntent().getExtras().getSerializable("users") == null) {
+            GetUserData();
+        } else {
+            userDetailsList = (ArrayList<userDetails>) this.getIntent().getExtras().getSerializable("users");
+        }
     }
 
     @Override
@@ -141,11 +151,6 @@ public class MyLocationDemoActivity extends AppCompatActivity
     @Override
     public boolean onMyLocationButtonClick() {
         Toast.makeText(this, "MyLocation saved on database", Toast.LENGTH_SHORT).show();
-        // Return false so that we don't consume the event and the default behavior still occurs
-        // (the camera animates to the user's current position).
-
-        //System.out.println(myRef.child("gps"));
-        //   }
         return false;
     }
 

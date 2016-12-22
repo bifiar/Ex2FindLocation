@@ -11,7 +11,7 @@
     <string name="no_location_detected"></string>
     <string name="app_name2">ListView Checkboxes</string>
  <string name="some_text">
-     Some North American Countries!
+     select user to show
  </string>
     No location detected. Make sure location is enabled on the device.
 </resources>

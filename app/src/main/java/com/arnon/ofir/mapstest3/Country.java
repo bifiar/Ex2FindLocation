@@ -1,33 +1,35 @@
 package com.arnon.ofir.mapstest3;
 
+import java.io.Serializable;
+
 /**
  * Created by Ofir on 12/20/2016.
  */
 
-public class Country {
+public class Country implements Serializable{
 
-    String code = null;
-    String name = null;
+    String premission = null;
+    String userName = null;
     boolean selected = false;
 
-    public Country(String code, String name, boolean selected) {
+    public Country(String premission, String userName, boolean selected) {
         super();
-        this.code = code;
-        this.name = name;
+        this.premission = premission;
+        this.userName = userName;
         this.selected = selected;
     }
 
-    public String getCode() {
-        return code;
+    public String getpremission() {
+        return premission;
     }
-    public void setCode(String code) {
-        this.code = code;
+    public void setpremission(String premission) {
+        this.premission = premission;
     }
-    public String getName() {
-        return name;
+    public String getuserName() {
+        return userName;
     }
-    public void setName(String name) {
-        this.name = name;
+    public void setuserName(String userName) {
+        this.userName = userName;
     }
 
     public boolean isSelected() {

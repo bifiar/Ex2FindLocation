@@ -1,6 +1,7 @@
 package com.arnon.ofir.mapstest3;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -12,6 +13,9 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +36,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,7 +54,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
     protected GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private String user;
-
+    private ArrayList<Country> countryList;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 5000; /* 2 sec */
     /**
@@ -69,11 +74,23 @@ public class MyLocationDemoActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         database=FirebaseDatabase.getInstance();
         user = this.getIntent().getExtras().getString("user");
-        creatUserOnDb()                                                                                               ;
+        creatUserOnDb();                                                                                             ;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
+        Button frienndsLocations=(Button) findViewById(R.id.friendslocationsBtn);
+        frienndsLocations.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent frienndsLocationsIntent=new Intent(MyLocationDemoActivity.this,ListViewCheckboxesActivity.class);
+                frienndsLocationsIntent.putExtra("users",countryList);
+                startActivity(frienndsLocationsIntent);//countryList
+
+            }
+        });
+        GetUserData();
         buildGoogleApiClient();
         SupportMapFragment mapFragment =(SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -201,6 +218,32 @@ public class MyLocationDemoActivity extends AppCompatActivity
 
         DatabaseReference myRef = database.getReference("users");
         myRef.child(user).setValue(new MyLocation(String.valueOf(location.getLatitude()),String.valueOf(location.getLongitude()),"user"));
+    }
+    private void GetUserData(){
+        database.getReference("users").addListenerForSingleValueEvent( new ValueEventListener(){
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                countryList = new ArrayList<Country>();
+                Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) dataSnapshot.getValue();
+                Log.d("1", "Value is: " + map);
+
+                for (Map.Entry<String,Map<String, String>> entry : map.entrySet())
+                {
+
+                    Log.d("1", "Value is: " + entry.getValue().get("permissions"));
+                    Log.d("1", "Value is: " + entry.getKey());
+                    Country country = new Country(entry.getValue().get("permissions"),entry.getKey(),false);
+                    countryList.add(country);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError DbError) {
+                Log.d("1", "Database Error: " + DbError.getMessage());
+            }
+        });
+
     }
 
     private Location enableGetMyLocation() {

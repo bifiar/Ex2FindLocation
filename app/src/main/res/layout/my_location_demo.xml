@@ -26,30 +26,24 @@
     <Button
         android:text="Ble"
         android:layout_marginTop="0dp"
-        android:layout_marginStart="180dp"
+        android:layout_marginStart="210dp"
         android:layout_width="130dp"
         android:layout_height="40dp"
         android:id="@+id/BleBtn" />
 
-    <Button
-        android:text="Button"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="35dp"
-        android:layout_width="130dp"
-        android:layout_height="40dp"
-        android:id="@+id/button7" />
+
 
     <Button
-        android:text="show Location"
-        android:layout_marginStart="180dp"
+        android:text="Friends locations"
+        android:layout_marginStart="40dp"
         android:layout_marginTop="35dp"
-        android:layout_width="130dp"
+        android:layout_width="300dp"
         android:layout_height="40dp"
-        android:id="@+id/showLocationBtn" />
+        android:id="@+id/friendslocationsBtn" />
 
     <Button
         android:text="Qr "
-        android:layout_marginStart="20dp"
+        android:layout_marginStart="40dp"
         android:layout_width="130dp"
         android:layout_height="40dp"
         android:layout_marginTop="0dp"

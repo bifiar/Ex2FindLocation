@@ -27,7 +27,5 @@ public class MyLocation {
         return latitude;
     }
 
-    public String getLongitude() {
-        return longitude;
-    }
+    public String getLongitude() {return longitude;}
 }

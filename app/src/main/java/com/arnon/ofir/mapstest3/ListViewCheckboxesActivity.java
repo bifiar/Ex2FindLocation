@@ -5,6 +5,8 @@ package com.arnon.ofir.mapstest3;
  */
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 import android.app.Activity;
 import android.content.Context;
@@ -23,12 +25,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 public class ListViewCheckboxesActivity extends Activity {
-
+    private DatabaseReference databaseRef;
     MyCustomAdapter dataAdapter = null;
-
+    private  ArrayList<Country> countryList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        databaseRef=FirebaseDatabase.getInstance().getReference();
+        countryList = ( ArrayList<Country>)this.getIntent().getExtras().getSerializable("users");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
@@ -41,23 +51,11 @@ public class ListViewCheckboxesActivity extends Activity {
 
     private void displayListView() {
 
-        //Array list of countries
-        ArrayList<Country> countryList = new ArrayList<Country>();
-        Country country = new Country("AFG","Afghanistan",false);
-        countryList.add(country);
-        country = new Country("ALB","Albania",true);
-        countryList.add(country);
-        country = new Country("DZA","Algeria",false);
-        countryList.add(country);
-        country = new Country("ASM","American Samoa",true);
-        countryList.add(country);
-        country = new Country("AND","Andorra",true);
-        countryList.add(country);
-        country = new Country("AGO","Angola",false);
-        countryList.add(country);
-        country = new Country("AIA","Anguilla",false);
-        countryList.add(country);
+        ctreatDataAdapter();
+    }
+    private void ctreatDataAdapter(){
 
+        Log.d("1","dataAdapter---------------------");
         //create an ArrayAdaptar from the String Array
         dataAdapter = new MyCustomAdapter(this,
                 R.layout.country_info, countryList);
@@ -72,13 +70,11 @@ public class ListViewCheckboxesActivity extends Activity {
                 // When clicked, show a toast with the TextView text
                 Country country = (Country) parent.getItemAtPosition(position);
                 Toast.makeText(getApplicationContext(),
-                        "Clicked on Row: " + country.getName(),
+                        "Clicked on Row: " + country.getuserName(),
                         Toast.LENGTH_LONG).show();
             }
         });
-
     }
-
     private class MyCustomAdapter extends ArrayAdapter<Country> {
 
         private ArrayList<Country> countryList;
@@ -97,7 +93,7 @@ public class ListViewCheckboxesActivity extends Activity {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-
+            Log.d("1","getView");
             ViewHolder holder = null;
             Log.v("ConvertView", String.valueOf(position));
 
@@ -128,8 +124,8 @@ public class ListViewCheckboxesActivity extends Activity {
             }
 
             Country country = countryList.get(position);
-            holder.code.setText(" (" +  country.getCode() + ")");
-            holder.name.setText(country.getName());
+            holder.code.setText(" (" +  country.getpremission() + ")");
+            holder.name.setText(country.getuserName());
             holder.name.setChecked(country.isSelected());
             holder.name.setTag(country);
 
@@ -152,10 +148,11 @@ public class ListViewCheckboxesActivity extends Activity {
                 responseText.append("The following were selected...\n");
 
                 ArrayList<Country> countryList = dataAdapter.countryList;
+                ArrayList<Country> userSelected=new ArrayList<Country>();
                 for(int i=0;i<countryList.size();i++){
                     Country country = countryList.get(i);
                     if(country.isSelected()){
-                        responseText.append("\n" + country.getName());
+                        userSelected.add(country);
                     }
                 }
 

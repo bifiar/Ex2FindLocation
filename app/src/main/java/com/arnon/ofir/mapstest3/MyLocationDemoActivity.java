@@ -54,30 +54,22 @@ public class MyLocationDemoActivity extends AppCompatActivity
     private ArrayList<userDetails> userDetailsList;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 5000; /* 2 sec */
-    /**
-     * Request code for location permission request.
-     *
-     * @see #onRequestPermissionsResult(int, String[], int[])
-     */
-    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;// * Request code for location permission request.
     protected static final String TAG = "GetLocation";
-    /**
-     * Flag indicating whether a requested permission has been denied after returning in
-     * {@link #onRequestPermissionsResult(int, String[], int[])}.
-     */
-    private boolean mPermissionDenied = false;
-
+    private boolean mPermissionDenied = false;// * Flag indicating whether a requested permission has been denied after returning in
     private GoogleMap mMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         database = FirebaseDatabase.getInstance();
+        checkDBupdate();
         user = this.getIntent().getExtras().getString("user");
         creatUserOnDb();
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
         buttonsListener();
-        checkDBupdate();
+
         buildGoogleApiClient();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -102,7 +94,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
             }
         });
         Button refreshBtb = (Button) findViewById(R.id.refreshBtb);
-        showBtn.setOnClickListener(new View.OnClickListener() {
+        refreshBtb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 GetUserData();
@@ -239,9 +231,10 @@ public class MyLocationDemoActivity extends AppCompatActivity
     }
 
     private void GetUserData() {
-        database.getReference("users").addListenerForSingleValueEvent(new ValueEventListener() {
+        database.getReference("users").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                Log.d("1","********get users DB************");
                 userDetailsList = new ArrayList<userDetails>();
                 Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) dataSnapshot.getValue();
                 for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {

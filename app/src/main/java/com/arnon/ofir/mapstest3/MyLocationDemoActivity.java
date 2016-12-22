@@ -3,23 +3,16 @@ package com.arnon.ofir.mapstest3;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.text.SpannableStringBuilder;
-import android.text.style.StyleSpan;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,18 +31,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.GenericTypeIndicator;
 import com.google.firebase.database.ValueEventListener;
 import com.google.maps.android.ui.IconGenerator;
 
-import static android.graphics.Typeface.BOLD;
-import static android.graphics.Typeface.ITALIC;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-
-import static android.text.Spanned.SPAN_EXCLUSIVE_EXCLUSIVE;
 
 /**
  * Created by Ofir on 12/16/2016.
@@ -65,7 +51,7 @@ public class MyLocationDemoActivity extends AppCompatActivity
     protected GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
     private String user;
-    private ArrayList<Country> countryList;
+    private ArrayList<userDetails> userDetailsList;
     private long UPDATE_INTERVAL = 10 * 1000;  /* 10 secs */
     private long FASTEST_INTERVAL = 5000; /* 2 sec */
     /**
@@ -85,23 +71,30 @@ public class MyLocationDemoActivity extends AppCompatActivity
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         database = FirebaseDatabase.getInstance();
         user = this.getIntent().getExtras().getString("user");
-
-
         creatUserOnDb();
-        ;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_location_demo);
+        buttonsListener();
+        if (this.getIntent().getExtras().getSerializable("users") == null) {
+            GetUserData();
+        } else {
+            userDetailsList = (ArrayList<userDetails>) this.getIntent().getExtras().getSerializable("users");
+        }
+        buildGoogleApiClient();
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+    }
+    private void buttonsListener(){
         Button frienndsLocations = (Button) findViewById(R.id.friendslocationsBtn);
         frienndsLocations.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent frienndsLocationsIntent = new Intent(MyLocationDemoActivity.this, ListViewCheckboxesActivity.class);
+                Intent frienndsLocationsIntent = new Intent(MyLocationDemoActivity.this, ListViewedUserSelect.class);
                 frienndsLocationsIntent.putExtra("user", user);
-                frienndsLocationsIntent.putExtra("users", countryList);
-                startActivity(frienndsLocationsIntent);//countryList
+                frienndsLocationsIntent.putExtra("users", userDetailsList);
+                startActivity(frienndsLocationsIntent);//userDetailsList
 
             }
         });
@@ -109,20 +102,10 @@ public class MyLocationDemoActivity extends AppCompatActivity
         showBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startDemo();
+                showSelectedUserMarks();
             }
         });
-
-        if (this.getIntent().getExtras().getSerializable("users") == null) {
-            GetUserData();
-        } else {
-            countryList = (ArrayList<Country>) this.getIntent().getExtras().getSerializable("users");
-        }
-        buildGoogleApiClient();
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
     }
-
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
@@ -254,20 +237,14 @@ public class MyLocationDemoActivity extends AppCompatActivity
         database.getReference("users").addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                countryList = new ArrayList<Country>();
+                userDetailsList = new ArrayList<userDetails>();
                 Map<String, Map<String, String>> map = (Map<String, Map<String, String>>) dataSnapshot.getValue();
-                Log.d("1", "Value is: " + map);
-
                 for (Map.Entry<String, Map<String, String>> entry : map.entrySet()) {
-
-                    Log.d("1", "Value is: " + entry.getValue().get("permissions"));
-                    Log.d("1", "Value is: " + entry.getKey());
-                    Country country = new Country(entry.getValue().get("permissions"), entry.getKey(), false, entry.getValue().get("latitude"), entry.getValue().get("longitude"));
-                    countryList.add(country);
+                    userDetails userDetails = new userDetails(entry.getValue().get("permissions"), entry.getKey(), false, entry.getValue().get("latitude"), entry.getValue().get("longitude"));
+                    userDetailsList.add(userDetails);
                 }
 
             }
-
             @Override
             public void onCancelled(DatabaseError DbError) {
                 Log.d("1", "Database Error: " + DbError.getMessage());
@@ -275,7 +252,6 @@ public class MyLocationDemoActivity extends AppCompatActivity
         });
 
     }
-
     private Location enableGetMyLocation() {
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -324,11 +300,11 @@ public class MyLocationDemoActivity extends AppCompatActivity
         }
     }
 
-    protected void startDemo() {
+    protected void showSelectedUserMarks() {
         IconGenerator iconFactory = new IconGenerator(this);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(32.1041943, 35.2050993), 10));
-        for (Country country : countryList) {
-            if (country.isSelected()) {
+        for (userDetails userDetails : userDetailsList) {
+            if (userDetails.isSelected()) {
                 int randStyle = (int)( Math.random() * 3);
                 switch (randStyle) {
                     case 0:
@@ -342,10 +318,8 @@ public class MyLocationDemoActivity extends AppCompatActivity
                         break;
 
                 }
-                addIcon(iconFactory, country.getuserName(), new LatLng(Double.parseDouble(country.getLatitude()), Double.parseDouble(country.getLongitude())));
+                addIcon(iconFactory, userDetails.getuserName(), new LatLng(Double.parseDouble(userDetails.getLatitude()), Double.parseDouble(userDetails.getLongitude())));
             }
-
-
         }
     }
     private void addIcon(IconGenerator iconFactory, CharSequence text, LatLng position) {

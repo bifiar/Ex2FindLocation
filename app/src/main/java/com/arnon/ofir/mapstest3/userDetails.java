@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by Ofir on 12/20/2016.
  */
 
-public class Country implements Serializable{
+public class userDetails implements Serializable{
 
     String premission = null;
     String userName = null;
@@ -22,7 +22,7 @@ public class Country implements Serializable{
         return latitude;
     }
 
-    public Country(String premission, String userName, boolean selected, String latitude, String longitude) {
+    public userDetails(String premission, String userName, boolean selected, String latitude, String longitude) {
         super();
         this.premission = premission;
         this.userName = userName;

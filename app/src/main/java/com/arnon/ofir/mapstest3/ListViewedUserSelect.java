@@ -5,8 +5,6 @@ package com.arnon.ofir.mapstest3;
  */
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.concurrent.ThreadFactory;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,68 +23,52 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
-public class ListViewCheckboxesActivity extends Activity {
+public class ListViewedUserSelect extends Activity {
     private DatabaseReference databaseRef;
     private String user;
     MyCustomAdapter dataAdapter = null;
-    private  ArrayList<Country> countryList;
+    private  ArrayList<userDetails> userDetailsList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         databaseRef=FirebaseDatabase.getInstance().getReference();
-        countryList = ( ArrayList<Country>)this.getIntent().getExtras().getSerializable("users");
+        userDetailsList = ( ArrayList<userDetails>)this.getIntent().getExtras().getSerializable("users");
         user=this.getIntent().getExtras().getString("user");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        //Generate list View from ArrayList
-        displayListView();
-
+        displayListView(); //Generate list View from ArrayList
         checkButtonClick();
-
     }
-
-    private void displayListView() {
-
-        ctreatDataAdapter();
-    }
-    private void ctreatDataAdapter(){
-
-        Log.d("1","dataAdapter---------------------");
+    private void displayListView(){
         //create an ArrayAdaptar from the String Array
         dataAdapter = new MyCustomAdapter(this,
-                R.layout.country_info, countryList);
+                R.layout.country_info, userDetailsList);
         ListView listView = (ListView) findViewById(R.id.listView1);
         // Assign adapter to ListView
         listView.setAdapter(dataAdapter);
 
 
         listView.setOnItemClickListener(new OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // When clicked, show a toast with the TextView text
-                Country country = (Country) parent.getItemAtPosition(position);
+                userDetails userDetails = (userDetails) parent.getItemAtPosition(position);
                 Toast.makeText(getApplicationContext(),
-                        "Clicked on Row: " + country.getuserName(),
+                         userDetails.getuserName()+"Was selected" ,
                         Toast.LENGTH_LONG).show();
             }
         });
     }
-    private class MyCustomAdapter extends ArrayAdapter<Country> {
+    private class MyCustomAdapter extends ArrayAdapter<userDetails> {
 
-        private ArrayList<Country> countryList;
+        private ArrayList<userDetails> userDetailsList;
 
         public MyCustomAdapter(Context context, int textViewResourceId,
-                               ArrayList<Country> countryList) {
-            super(context, textViewResourceId, countryList);
-            this.countryList = new ArrayList<Country>();
-            this.countryList.addAll(countryList);
+                               ArrayList<userDetails> userDetailsList) {
+            super(context, textViewResourceId, userDetailsList);
+            this.userDetailsList = new ArrayList<userDetails>();
+            this.userDetailsList.addAll(userDetailsList);
         }
 
         private class ViewHolder {
@@ -113,12 +95,8 @@ public class ListViewCheckboxesActivity extends Activity {
                 holder.name.setOnClickListener( new View.OnClickListener() {
                     public void onClick(View v) {
                         CheckBox cb = (CheckBox) v ;
-                        Country country = (Country) cb.getTag();
-                        Toast.makeText(getApplicationContext(),
-                                "Clicked on Checkbox: " + cb.getText() +
-                                        " is " + cb.isChecked(),
-                                Toast.LENGTH_LONG).show();
-                        country.setSelected(cb.isChecked());
+                        userDetails userDetails = (userDetails) cb.getTag();
+                        userDetails.setSelected(cb.isChecked());
                     }
                 });
             }
@@ -126,20 +104,15 @@ public class ListViewCheckboxesActivity extends Activity {
                 holder = (ViewHolder) convertView.getTag();
             }
 
-            Country country = countryList.get(position);
-            holder.code.setText(" (" +  country.getpremission() + ")");
-            holder.name.setText(country.getuserName());
-            holder.name.setChecked(country.isSelected());
-            holder.name.setTag(country);
-
+            userDetails userDetails = userDetailsList.get(position);
+            holder.code.setText(" (" +  userDetails.getpremission() + ")");
+            holder.name.setText(userDetails.getuserName());
+            holder.name.setChecked(userDetails.isSelected());
+            holder.name.setTag(userDetails);
             return convertView;
-
         }
-
     }
-
     private void checkButtonClick() {
-
 
         Button myButton = (Button) findViewById(R.id.findSelected);
         myButton.setOnClickListener(new OnClickListener() {
@@ -150,18 +123,18 @@ public class ListViewCheckboxesActivity extends Activity {
                 StringBuffer responseText = new StringBuffer();
 
 
-                ArrayList<Country> countryList = dataAdapter.countryList;
-                ArrayList<Country> userSelected=new ArrayList<Country>();
-                for(int i=0;i<countryList.size();i++){
-                    Country country = countryList.get(i);
-                    if(country.isSelected()){
-                        userSelected.add(country);
+                ArrayList<userDetails> userDetailsList = dataAdapter.userDetailsList;
+                ArrayList<userDetails> userSelected=new ArrayList<userDetails>();
+                for(int i = 0; i< userDetailsList.size(); i++){
+                    userDetails userDetails = userDetailsList.get(i);
+                    if(userDetails.isSelected()){
+                        userSelected.add(userDetails);
                     }
                 }
 
-                Intent signInIntent=new Intent(ListViewCheckboxesActivity.this,MyLocationDemoActivity.class);
+                Intent signInIntent=new Intent(ListViewedUserSelect.this,MyLocationDemoActivity.class);
                 signInIntent.putExtra("user",user);
-                signInIntent.putExtra("users",countryList);
+                signInIntent.putExtra("users", userDetailsList);// pass the users to location activity
                 startActivity(signInIntent);
             }
         });

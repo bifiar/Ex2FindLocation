@@ -1,12 +1,12 @@
 package com.arnon.ofir.mapstest3;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent signInIntent=new Intent(MainActivity.this,MyLocationDemoActivity.class);
+                Log.d("ddd",userName.getText().toString());
                 signInIntent.putExtra("user",userName.getText().toString());
                 startActivity(signInIntent);
 

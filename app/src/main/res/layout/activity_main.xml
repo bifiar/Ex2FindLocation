@@ -19,23 +19,32 @@
         android:layout_below="@+id/EnterUserName"
         android:layout_centerHorizontal="true" />
 
-    <Button
-        android:text="Sign In"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/SignInBtn"
-        android:layout_marginTop="23dp"
-        android:layout_below="@+id/userNameEt"
-        android:layout_alignStart="@+id/userNameEt"
-        android:layout_alignEnd="@+id/userNameEt" />
-
     <TextView
         android:text="Enter user name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/EnterUserName"
-        android:layout_marginTop="167dp"
+        android:layout_marginTop="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <Spinner
+        android:id="@+id/permiChoose"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/btn_dropdown"
+        android:spinnerMode="dropdown"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <Button
+        android:text="Sign In"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/SignInBtn"
+        android:layout_marginTop="41dp"
+        android:layout_below="@+id/permiChoose"
+        android:layout_alignStart="@+id/permiChoose" />
+
 
 </RelativeLayout>

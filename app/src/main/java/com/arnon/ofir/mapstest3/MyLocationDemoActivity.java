@@ -135,6 +135,10 @@ public class MyLocationDemoActivity extends AppCompatActivity
                         latLng=new LatLng(Double.parseDouble(locationOnMap.getLatitude()),Double.parseDouble(locationOnMap.getLongitude()));
                         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,20));
                         mMap.addMarker(new MarkerOptions().position(latLng).title("QR:"+QRlocation+" location"));
+
+                        DatabaseReference myRef = database.getReference("users").child(user);
+                        myRef.setValue(new MyLocation(locationOnMap.getLatitude(),locationOnMap.getLongitude(),"user"));
+
                     }
 
                     @Override

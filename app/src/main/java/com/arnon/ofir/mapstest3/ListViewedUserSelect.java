@@ -132,7 +132,7 @@ public class ListViewedUserSelect extends Activity {
                     }
                 }
 
-                Intent signInIntent=new Intent(ListViewedUserSelect.this,MyLocationDemoActivity.class);
+                Intent signInIntent=new Intent(ListViewedUserSelect.this,UserActivity.class);
                 signInIntent.putExtra("user",user);
                 signInIntent.putExtra("users", userDetailsList);// pass the users to location activity
                 startActivity(signInIntent);
